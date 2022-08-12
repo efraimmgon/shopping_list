@@ -29,4 +29,17 @@ class DbHelper {
     );
     return db;
   }
+
+  Future testDb() async {
+    db = await openDb();
+    await db?.execute('INSERT INTO lists VALUES (0, "Fruit", 2)');
+    await db?.execute(
+        'INSERT INTO items VALUES (0, 0, "Apples", "2 kg", "better if they are green")');
+    List<Map<String, Object?>>? lists =
+        await db?.rawQuery('SELECT * FROM lists');
+    List<Map<String, Object?>>? items =
+        await db?.rawQuery('SELECT * FROM items');
+    print(lists![0].toString());
+    print(items![0].toString());
+  }
 }
