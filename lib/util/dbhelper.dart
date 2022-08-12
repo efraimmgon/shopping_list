@@ -1,5 +1,7 @@
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart' as s;
+import 'package:shopping_list/models/list_items.dart';
+import 'package:shopping_list/models/shopping_list.dart';
 
 class DbHelper {
   final int version = 1;
@@ -36,10 +38,28 @@ class DbHelper {
     await db?.execute(
         'INSERT INTO items VALUES (0, 0, "Apples", "2 kg", "better if they are green")');
     List<Map<String, Object?>>? lists =
-        await db?.rawQuery('SELECT * FROM lists');
+        await db!.rawQuery('SELECT * FROM lists');
     List<Map<String, Object?>>? items =
-        await db?.rawQuery('SELECT * FROM items');
-    print(lists![0].toString());
-    print(items![0].toString());
+        await db!.rawQuery('SELECT * FROM items');
+    print(lists[0].toString());
+    print(items[0].toString());
+  }
+
+  Future<int> insertList(ShoppingList list) async {
+    int id = await db!.insert(
+      'lists',
+      list.toMap(),
+      conflictAlgorithm: s.ConflictAlgorithm.replace,
+    );
+    return id;
+  }
+
+  Future<int> insertItem(ListItem item) async {
+    int id = await db!.insert(
+      'items',
+      item.toMap(),
+      conflictAlgorithm: s.ConflictAlgorithm.replace,
+    );
+    return id;
   }
 }
