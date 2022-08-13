@@ -94,4 +94,20 @@ class DbHelper {
             ))
         .toList();
   }
+
+  /// Takes a ShoppingList and uses its id to delete the list and all items
+  /// related to it. Returns the id of the deleted list.
+  Future<int> deleteList(ShoppingList list) async {
+    db!.delete(
+      "items",
+      where: 'idList = ?',
+      whereArgs: [list.id],
+    );
+    final int result = await db!.delete(
+      "lists",
+      where: 'id = ?',
+      whereArgs: [list.id],
+    );
+    return result;
+  }
 }

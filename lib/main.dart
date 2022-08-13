@@ -53,28 +53,40 @@ class _ShListState extends State<ShList> {
         itemCount: (shoppingList != null) ? shoppingList!.length : 0,
         itemBuilder: (BuildContext context, int index) {
           ShoppingList sl = shoppingList![index];
-          return ListTile(
-            leading: CircleAvatar(
-              child: Text(sl.priority.toString()),
-            ),
-            title: Text(sl.name),
-            trailing: IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        dialog.buildDialog(context, sl, false));
+          return Dismissible(
+            key: Key(sl.id.toString()),
+            onDismissed: (direction) {
+              String strName = sl.name;
+              helper.deleteList(sl);
+              setState(() {
+                shoppingList!.removeAt(index);
+              });
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text("$strName deleted")));
+            },
+            child: ListTile(
+              leading: CircleAvatar(
+                child: Text(sl.priority.toString()),
+              ),
+              title: Text(sl.name),
+              trailing: IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          dialog.buildDialog(context, sl, false));
+                },
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ItemsScreen(shoppingList![index]),
+                  ),
+                );
               },
             ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ItemsScreen(shoppingList![index]),
-                ),
-              );
-            },
           );
         },
       ),
