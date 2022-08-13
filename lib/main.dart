@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'util/dbhelper.dart' as db;
 import 'models/list_items.dart';
 import 'models/shopping_list.dart';
+import 'ui/items_screen.dart';
 
 void main(List<String> args) {
   runApp(const MyApp());
@@ -18,8 +19,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
-        appBar: AppBar(title: Text('Shopping List')),
-        body: ShList(),
+        appBar: AppBar(title: const Text('Shopping List')),
+        body: const ShList(),
       ),
     );
   }
@@ -34,20 +35,41 @@ class ShList extends StatefulWidget {
 
 class _ShListState extends State<ShList> {
   db.DbHelper helper = db.DbHelper();
+  List<ShoppingList>? shoppingList;
 
   @override
   Widget build(BuildContext context) {
     showData();
-    return Container();
+    return ListView.builder(
+      itemCount: (shoppingList != null) ? shoppingList!.length : 0,
+      itemBuilder: (BuildContext context, int index) {
+        return ListTile(
+          title: Text(shoppingList![index].name),
+          leading: CircleAvatar(
+            child: Text(shoppingList![index].priority.toString()),
+          ),
+          trailing: IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () {},
+          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ItemsScreen(shoppingList![index]),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   Future showData() async {
     await helper.openDb();
-    ShoppingList list = ShoppingList(0, 'Bakery', 2);
-    int listId = await helper.insertList(list);
-    ListItem item = ListItem(0, listId, 'Bread', '1 kg', 'note');
-    int itemId = await helper.insertItem(item);
-    print('List id: ${listId.toString()}');
-    print('Item id: ${itemId.toString()}');
+    shoppingList = await helper.getLists();
+    setState(() {
+      shoppingList = shoppingList;
+    });
   }
 }

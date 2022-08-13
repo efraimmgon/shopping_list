@@ -7,6 +7,13 @@ class DbHelper {
   final int version = 1;
   s.Database? db;
 
+  static final DbHelper _dbHelper = DbHelper._internal();
+  DbHelper._internal();
+
+  factory DbHelper() {
+    return _dbHelper;
+  }
+
   Future<s.Database?> openDb() async {
     db ??= await s.openDatabase(
       path.join(await s.getDatabasesPath(), 'shopping.db'),
@@ -61,5 +68,30 @@ class DbHelper {
       conflictAlgorithm: s.ConflictAlgorithm.replace,
     );
     return id;
+  }
+
+  Future<List<ShoppingList>> getLists() async {
+    final List<Map<String, dynamic>> maps = await db!.query('lists');
+    return List.generate(maps.length, (i) {
+      var list = maps[i];
+      return ShoppingList(list['id'], list['name'], list['priority']);
+    });
+  }
+
+  Future<List<ListItem>> getItems(int idList) async {
+    final List<Map<String, dynamic>> maps = await db!.query(
+      'items',
+      where: 'idList = ?',
+      whereArgs: [idList],
+    );
+    return maps
+        .map((e) => ListItem(
+              e['id'],
+              e['idList'],
+              e['name'],
+              e['quantity'],
+              e['note'],
+            ))
+        .toList();
   }
 }
