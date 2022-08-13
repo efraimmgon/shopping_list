@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'util/dbhelper.dart' as db;
-import 'models/list_items.dart';
 import 'models/shopping_list.dart';
 import 'ui/items_screen.dart';
 import 'package:shopping_list/ui/shopping_list_dialog.dart';
@@ -19,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ShList(),
+      home: const ShList(),
     );
   }
 }
@@ -47,7 +46,7 @@ class _ShListState extends State<ShList> {
     showData();
     return Scaffold(
       appBar: AppBar(
-        title: Text('Shopping List'),
+        title: const Text('Shopping List'),
       ),
       body: ListView.builder(
         itemCount: (shoppingList != null) ? shoppingList!.length : 0,
@@ -94,8 +93,11 @@ class _ShListState extends State<ShList> {
         onPressed: () {
           showDialog(
             context: context,
-            builder: (BuildContext context) =>
-                dialog.buildDialog(context, ShoppingList(0, '', 0), true),
+            builder: (BuildContext context) => dialog.buildDialog(
+              context,
+              ShoppingList(0, '', 0),
+              true,
+            ),
           );
         },
         backgroundColor: Colors.pink,

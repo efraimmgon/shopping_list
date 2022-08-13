@@ -8,6 +8,7 @@ class ShoppingListDialog {
 
   Widget buildDialog(BuildContext context, ShoppingList list, bool isNew) {
     DbHelper helper = DbHelper();
+    helper.openDb();
     if (!isNew) {
       txtName.text = list.name;
       txtPriority.text = list.priority.toString();
